@@ -35,9 +35,9 @@ def subsample(data, group_info, percentage):
     return filtered_df, selected_groups
 
 
-def main(grouped, evaluations, algo_name, dataset_name, subsampling_factor=0.15, use_random=False):
-    df = pd.read_csv(f'../datasets/water pipes/{dataset_name}.csv')
-    with open(f"../datasets/water pipes/{dataset_name}_groups.json", "r") as f:
+def main(grouped, evaluations, algo_name, dataset_name, subsampling_factor=0.15):
+    df = pd.read_csv(f'/datasets/water pipes/{dataset_name}.csv')
+    with open(f"/datasets/water pipes/{dataset_name}_groups.json", "r") as f:
         group_info = json.load(f)
 
     if dataset_name == "leakdb":
@@ -48,21 +48,6 @@ def main(grouped, evaluations, algo_name, dataset_name, subsampling_factor=0.15,
         grouping_data = group_info
     else:
         raise ValueError("Invalid dataset name")
-
-    if use_random and dataset_name == "lbnl_fdd":
-        print(f"creating random groups for {dataset_name}")
-        random_groups = []
-        features = data.header.copy()
-        random_duos = np.random.choice(features, (29, 2), replace=False)
-
-        for duo in random_duos:
-            feature1, feature2 = duo
-            value1 = "categorical" if feature1.endswith("__type") else "numerical"
-            value2 = "categorical" if feature2.endswith("__type") else "numerical"
-
-            random_groups.append({feature1: value1, feature2: value2})
-
-        grouping_data = random_groups
 
     metrics = ("support", "confidence")
 
@@ -89,12 +74,12 @@ def main(grouped, evaluations, algo_name, dataset_name, subsampling_factor=0.15,
 
     return run_time, rules
 
-# if __name__ == "__main__":
-#     max_evals = 10000
-#     algo_name = "BAT"
-#     dataset_name = "lbnl_fdd"
-#     grouped = True
+if __name__ == "__main__":
+    max_evals = 10000
+    algo_name = "BAT"
+    dataset_name = "lbnl_fdd"
+    grouped = True
 
-#     run_time, rules = main(grouped, max_evals, algo_name, dataset_name)
-#     print(run_time)
-#     print(rules)
+    run_time, rules = main(grouped, max_evals, algo_name, dataset_name)
+    print(run_time)
+    print(rules)

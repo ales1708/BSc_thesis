@@ -1,9 +1,8 @@
 import numpy as np
 import json
-import os
 from NARM_grouped import main
 
-def evaluate_algorithm(group, evals, iterations, dataset_name, algo_name, subsampling_factor, use_random):
+def evaluate_algorithm(group, evals, iterations, dataset_name, algo_name, subsampling_factor):
     runtimes = []
     confidences = []
     supports = []
@@ -16,7 +15,7 @@ def evaluate_algorithm(group, evals, iterations, dataset_name, algo_name, subsam
 
     for i in range(iterations):
         print(f"Group: {group}, Evals: {evals}, Iteration: {i}")
-        runtime, rules = main(grouped=group, evaluations=evals, dataset_name=dataset_name, algo_name=algo_name, subsampling_factor=subsampling_factor, use_random=use_random)
+        runtime, rules = main(grouped=group, evaluations=evals, dataset_name=dataset_name, algo_name=algo_name, subsampling_factor=subsampling_factor)
 
         runtimes.append(runtime)
         if len(rules) == 0:
@@ -68,16 +67,15 @@ def main_evaluation():
     results = []
     dataset_name = "lbnl_fdd"
     algo_name = "GWO"
-    use_random = True
     subsampling_factor = 0.2
 
-    for evals in [50000]:
+    for evals in [10000, 25000, 50000]:
         eval_results = []
         print(f"Current evals: {evals}, dataset: {dataset_name}, algo: {algo_name}")
         for group in [True, False]:
-            iterations = 25
+            iterations = 50
             print(f"Amount of iterations: {iterations}")
-            result = evaluate_algorithm(group, evals, iterations, dataset_name, algo_name, subsampling_factor, use_random)
+            result = evaluate_algorithm(group, evals, iterations, dataset_name, algo_name, subsampling_factor)
             results.append({
                 "group": group,
                 "evals": evals,
@@ -91,16 +89,9 @@ def main_evaluation():
                 **result
             })
             print("-------------------")
-        if dataset_name == "leakdb":
-            with open(f'results/{algo_name}/{dataset_name}/results_{evals}_sf({subsampling_factor}).json', 'w') as file:
-                json.dump(eval_results, file, indent=4)
-        elif dataset_name == "lbnl_fdd":
-            if use_random:
-                with open(f'results/{algo_name}/{dataset_name}/results_{evals}_rand.json', 'w') as file:
-                    json.dump(eval_results, file, indent=4)
-            else:
-                with open(f'results/{algo_name}/{dataset_name}/results_{evals}_extra.json', 'w') as file:
-                    json.dump(eval_results, file, indent=4)
+
+        with open(f'results/{algo_name}/{dataset_name}/results_{evals}_extra.json', 'w') as file:
+            json.dump(eval_results, file, indent=4)
         print("++++++++++++++++++++++++++++++++++", end="\n\n")
 
     return results
@@ -111,5 +102,5 @@ if __name__ == "__main__":
     # Further processing of results can be done here
 
     print("Evaluation done")
-    with open('new_results_all.json', 'w') as file:
+    with open('complete_results_all.json', 'w') as file:
         json.dump(results, file)

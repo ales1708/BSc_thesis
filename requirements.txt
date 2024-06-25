@@ -1,0 +1,6 @@
+niaPy
+niaArm
+mlxtend
+pandas
+matplotlib
+pandasjson

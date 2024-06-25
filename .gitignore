@@ -1,0 +1,6 @@
+/venv
+/.venv
+*.pyc
+.DS_Store
+DS_Store
+final_new/.DS_Store
